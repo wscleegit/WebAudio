@@ -1,0 +1,64 @@
+
+<!-- Use "open -na Google\ Chrome --args --user-data-dir=/tmp/temporary-chrome-profile-dir --disable-web-security" to open a new instance of Chrome to access local mp3 file 
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Web Audio Basics 2</title>
+  <meta name="description" content="Audio basics demo for Web Audio API">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+
+<div id="boombox">
+	
+			<button data-playing="false" class="tape-controls-play" role="switch" aria-checked="false">
+				<span>Play/Pause</span>
+			</button>
+		
+
+	
+</div>
+
+<script type="text/javascript">
+window.onload = function() {
+
+	const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+	console.clear();
+
+	// white-noise-processor.js
+	class WhiteNoiseProcessor extends AudioWorkletProcessor {
+	  process (inputs, outputs, parameters) {
+	    const output = outputs[0];
+	    output.forEach(channel => {
+	      for (let i = 0; i < channel.length; i++) {
+	        channel[i] = Math.random() * 2 - 1
+	      }
+	    });
+	    return true;
+	  };
+	};
+
+	registerProcessor('white-noise-processor', WhiteNoiseProcessor);
+
+	const audioContext = new AudioContext();
+	audioContext.audioWorklet.addModule('white-noise-processor.js');
+	const whiteNoiseNode = new AudioWorkletNode(audioContext, 'white-noise-processor');
+	whiteNoiseNode.connect(audioContext.destination)
+	audioContext.resume();
+	whiteNoiseNode.start()
+
+}
+
+
+// Track credit: Outfoxing the Fox by Kevin MacLeod under Creative Commons
+
+</script>
+
+</body>
+</html>
